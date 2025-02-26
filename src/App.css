@@ -1,0 +1,85 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+ 
+.App {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.table th,
+.table td {
+  vertical-align: middle !important;
+}
+ 
+button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+ 
+
+.my-table thead th {
+  background-color: #172632 !important;
+  color: #fff !important;
+}
+
+
+.modal-header {
+ 
+  background: rgb(69, 255, 175) !important;
+  color: #000000 !important;
+}
+
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #172632  !important;
+  --bs-btn-border-color: #172632  !important;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #172632  !important;
+  --bs-btn-hover-border-color: #172632  !important;
+  --bs-btn-focus-shadow-rgb: 49, 132, 253;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #172632  !important;
+  --bs-btn-active-border-color: #172632  !important;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #172632  !important;
+  --bs-btn-disabled-border-color: #172632  !important;
+}
