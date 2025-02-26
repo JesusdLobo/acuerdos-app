@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import {
@@ -11,53 +11,46 @@ import {
   Col
 } from 'react-bootstrap';
 import { FaPlus, FaEdit, FaTrash, FaDollarSign } from 'react-icons/fa';
-
 import AcuerdoModal from './AcuerdoModal';
 import TarifasModal from './TarifasModal';
 
-const BASE_URL = 'http://75.119.141.207:8011/api'; 
+const BASE_URL = 'http://75.119.141.207:8011/api';
 
 function AcuerdosPage() {
   const [acuerdos, setAcuerdos] = useState([]);
-  const [agentes, setAgentes] = useState([]); // Lista de agentes desde la API
-
+  const [agentes, setAgentes] = useState([]);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-
   const [filterAgent, setFilterAgent] = useState('Todos');
   const [filterNif, setFilterNif] = useState('');
-
   const [showAcuerdoModal, setShowAcuerdoModal] = useState(false);
   const [showTarifasModal, setShowTarifasModal] = useState(false);
   const [selectedAcuerdo, setSelectedAcuerdo] = useState(null);
 
-  // --- Cargar acuerdos ---
-  const fetchAcuerdos = async () => {
+  const fetchAcuerdos = useCallback(async () => {
     try {
       const resp = await axios.get(`${BASE_URL}/Acuerdos?page=${page}&pageSize=${pageSize}`);
       setAcuerdos(resp.data.data || []);
       setTotalPages(resp.data.totalPages || 1);
-    } catch (error) {
-      console.error('Error fetching acuerdos:', error);
+    } catch {
       setAcuerdos([]);
     }
-  };
+  }, [page, pageSize]);
 
-  const fetchAgentes = async () => {
+  const fetchAgentes = useCallback(async () => {
     try {
       const resp = await axios.get(`${BASE_URL}/Acuerdos/AgenteComercial`);
       setAgentes(resp.data || []);
-    } catch (error) {
-      console.error('Error fetching agentes:', error);
+    } catch {
       setAgentes([]);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAcuerdos();
     fetchAgentes();
-  }, [page]);
+  }, [page, fetchAcuerdos, fetchAgentes]);
 
   const handleDelete = (acuerdoId) => {
     Swal.fire({
@@ -75,8 +68,7 @@ function AcuerdosPage() {
           await axios.delete(`${BASE_URL}/Acuerdos/${acuerdoId}`);
           Swal.fire('¡Eliminado!', 'El acuerdo ha sido eliminado.', 'success');
           fetchAcuerdos();
-        } catch (error) {
-          console.error('Error deleting acuerdo:', error);
+        } catch {
           Swal.fire('Error', 'No se pudo eliminar el acuerdo.', 'error');
         }
       }
@@ -108,7 +100,6 @@ function AcuerdosPage() {
     if (refresh) fetchAcuerdos();
   };
 
-
   const filteredAcuerdos = acuerdos.filter((ac) => {
     if (filterAgent !== 'Todos') {
       const agenteId = ac.agenteComercial ? ac.agenteComercial.idAgente : '';
@@ -124,7 +115,6 @@ function AcuerdosPage() {
   return (
     <Card className="shadow">
       <Card.Body>
-        {/* Filtros y botón de nuevo */}
         <Row className="mb-3">
           <Col md="8" className="d-flex gap-2 align-items-center">
             <Form.Select
@@ -139,7 +129,6 @@ function AcuerdosPage() {
                 </option>
               ))}
             </Form.Select>
-
             <Form.Control
               type="text"
               placeholder="Buscar por NIF"
@@ -150,19 +139,13 @@ function AcuerdosPage() {
           </Col>
           <Col md="4" className="text-end">
             <Button
-              style={{
-                backgroundColor: '#45FFAF',
-                border: 'none',
-                color: '#172632'
-              }}
+              style={{ backgroundColor: '#45FFAF', border: 'none', color: '#172632' }}
               onClick={handleCreate}
             >
               <FaPlus /> Crear Acuerdo
             </Button>
           </Col>
         </Row>
-
-        {/* Tabla de Acuerdos */}
         <Table bordered hover responsive className="my-table">
           <thead>
             <tr>
@@ -203,24 +186,33 @@ function AcuerdosPage() {
             })}
           </tbody>
         </Table>
-
-        {/* Paginación */}
         <div className="d-flex justify-content-between mt-3">
           <span>Página {page} de {totalPages}</span>
           <div>
-            <Button variant="outline-secondary" className="me-2" disabled={page <= 1} onClick={() => setPage(page - 1)}>
+            <Button
+              variant="outline-secondary"
+              className="me-2"
+              disabled={page <= 1}
+              onClick={() => setPage(page - 1)}
+            >
               Anterior
             </Button>
-            <Button variant="outline-secondary" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
+            <Button
+              variant="outline-secondary"
+              disabled={page >= totalPages}
+              onClick={() => setPage(page + 1)}
+            >
               Siguiente
             </Button>
           </div>
         </div>
       </Card.Body>
-
-      {/* Modales */}
-      {showAcuerdoModal && <AcuerdoModal show={showAcuerdoModal} onHide={closeAcuerdoModal} acuerdo={selectedAcuerdo} />}
-      {showTarifasModal && <TarifasModal show={showTarifasModal} onHide={closeTarifasModal} acuerdo={selectedAcuerdo} />}
+      {showAcuerdoModal && (
+        <AcuerdoModal show={showAcuerdoModal} onHide={closeAcuerdoModal} acuerdo={selectedAcuerdo} />
+      )}
+      {showTarifasModal && (
+        <TarifasModal show={showTarifasModal} onHide={closeTarifasModal} acuerdo={selectedAcuerdo} />
+      )}
     </Card>
   );
 }

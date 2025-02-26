@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -8,7 +8,6 @@ const ACUERDOS_URL = 'http://75.119.141.207:8011/api/Acuerdos';
 
 function AcuerdoModal({ show, onHide, acuerdo }) {
   const isEdit = Boolean(acuerdo);
-
   const [formData, setFormData] = useState({
     idAgente: '',
     fechaAlta: '',
@@ -19,25 +18,22 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
     exclusividad: 0,
     codFormaPago: ''
   });
-
   const [agents, setAgents] = useState([]);
 
-  const fetchAgents = async () => {
+  const fetchAgents = useCallback(async () => {
     try {
       const resp = await axios.get(AGENTS_URL);
       setAgents(resp.data || []);
     } catch (error) {
-      console.error('Error fetching agents:', error);
       setAgents([]);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (show) {
       fetchAgents();
     }
-  }, [show]);
-
+  }, [show, fetchAgents]);
 
   useEffect(() => {
     if (acuerdo) {
@@ -52,7 +48,6 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
         codFormaPago: acuerdo.codFormaPago || ''
       });
     } else {
-    
       setFormData({
         idAgente: '',
         fechaAlta: '',
@@ -66,48 +61,37 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
     }
   }, [acuerdo]);
 
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((p) => ({
+      ...p,
       [name]: type === 'checkbox' ? checked : value
     }));
   };
 
- 
   const handleSubmit = async () => {
     try {
-
       let payload;
       if (isEdit) {
         payload = { ...acuerdo, ...formData };
       } else {
-        
         payload = { ...formData };
       }
-
-    
       if (!payload.fechaBaja) {
         payload.fechaBaja = null;
       }
-     
       if (!payload.fechaAlta) {
         payload.fechaAlta = null;
       }
-
       if (isEdit) {
-       
         await axios.put(`${ACUERDOS_URL}/${acuerdo.idAcuerdo}`, payload);
         Swal.fire('¡Actualizado!', 'El acuerdo se ha actualizado correctamente.', 'success');
       } else {
-  
         await axios.post(ACUERDOS_URL, payload);
         Swal.fire('¡Creado!', 'El acuerdo se ha creado correctamente.', 'success');
       }
-      onHide(true); 
+      onHide(true);
     } catch (error) {
-     
       if (error.response && error.response.status === 400 && error.response.data?.errors) {
         const serverErrors = error.response.data.errors;
         let errorMsg = '';
@@ -116,7 +100,6 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
         }
         Swal.fire('Error de validación', errorMsg, 'error');
       } else {
-        console.error('Error guardando el acuerdo:', error);
         Swal.fire('Error', 'No se pudo guardar el acuerdo.', 'error');
       }
     }
@@ -133,14 +116,9 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          {/* Combo de agentes */}
           <Form.Group controlId="formIdAgente" className="mb-3">
             <Form.Label>Agente Comercial</Form.Label>
-            <Form.Select
-              name="idAgente"
-              value={formData.idAgente}
-              onChange={handleChange}
-            >
+            <Form.Select name="idAgente" value={formData.idAgente} onChange={handleChange}>
               <option value="">-- Seleccione un agente --</option>
               {agents.map((agent) => (
                 <option key={agent.idAgente} value={agent.idAgente}>
@@ -149,7 +127,6 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
               ))}
             </Form.Select>
           </Form.Group>
-
           <Form.Group controlId="formFechaAlta" className="mb-3">
             <Form.Label>Fecha Alta</Form.Label>
             <Form.Control
@@ -159,7 +136,6 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
               onChange={handleChange}
             />
           </Form.Group>
-
           <Form.Group controlId="formFechaBaja" className="mb-3">
             <Form.Label>Fecha Baja</Form.Label>
             <Form.Control
@@ -169,7 +145,6 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
               onChange={handleChange}
             />
           </Form.Group>
-
           <Form.Group controlId="formAmbito" className="mb-3">
             <Form.Label>Ámbito</Form.Label>
             <Form.Control
@@ -179,7 +154,6 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
               onChange={handleChange}
             />
           </Form.Group>
-
           <Form.Group controlId="formDuracionMeses" className="mb-3">
             <Form.Label>Duración Meses</Form.Label>
             <Form.Control
@@ -189,7 +163,6 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
               onChange={handleChange}
             />
           </Form.Group>
-
           <Form.Group controlId="formProrroga" className="mb-3">
             <Form.Check
               type="checkbox"
@@ -199,7 +172,6 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
               onChange={handleChange}
             />
           </Form.Group>
-
           <Form.Group controlId="formExclusividad" className="mb-3">
             <Form.Label>Exclusividad</Form.Label>
             <Form.Control
@@ -209,7 +181,6 @@ function AcuerdoModal({ show, onHide, acuerdo }) {
               onChange={handleChange}
             />
           </Form.Group>
-
           <Form.Group controlId="formCodFormaPago" className="mb-3">
             <Form.Label>Código Forma de Pago</Form.Label>
             <Form.Control
