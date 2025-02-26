@@ -14,7 +14,7 @@ import { FaPlus, FaEdit, FaTrash, FaDollarSign } from 'react-icons/fa';
 import AcuerdoModal from './AcuerdoModal';
 import TarifasModal from './TarifasModal';
 
-const BASE_URL = 'http://75.119.141.207:8011/api';
+const BASE_URL = 'https://nortalia.eu/api';
 
 function AcuerdosPage() {
   const [acuerdos, setAcuerdos] = useState([]);

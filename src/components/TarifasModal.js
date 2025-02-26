@@ -3,7 +3,7 @@ import { Modal, Button, Table, Form } from 'react-bootstrap';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-const BASE_URL = 'http://75.119.141.207:8011/api';
+const BASE_URL = 'https://nortalia.eu/api';
 
 function TarifasModal({ show, onHide, acuerdo }) {
   const [assignedTarifas, setAssignedTarifas] = useState([]);

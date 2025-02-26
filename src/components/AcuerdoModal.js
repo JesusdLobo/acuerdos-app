@@ -3,8 +3,8 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-const AGENTS_URL = 'http://75.119.141.207:8011/api/Acuerdos/AgenteComercial';
-const ACUERDOS_URL = 'http://75.119.141.207:8011/api/Acuerdos';
+const AGENTS_URL = 'https://nortalia.eu/api/Acuerdos/AgenteComercial';
+const ACUERDOS_URL = 'https://nortalia.eu/api/Acuerdos';
 
 function AcuerdoModal({ show, onHide, acuerdo }) {
   const isEdit = Boolean(acuerdo);
