@@ -1,34 +1,36 @@
 # Node.js Build Pipeline for React Deployment on IIS
 
 trigger:
-- main
+- main  # Se ejecuta la build en cada push a main
 
 pool:
   vmImage: ubuntu-latest
 
 steps:
-# Instalar Node.js
+# 1️⃣ Instalar Node.js
 - task: NodeTool@0
   inputs:
     versionSpec: '20.x'
   displayName: 'Install Node.js'
 
-# Instalar dependencias y construir la aplicación
+# 2️⃣ Instalar dependencias y construir la aplicación
 - script: |
     npm install
     npm run build
   displayName: 'npm install and build'
 
-# Publicar los artefactos (IMPORTANTE)
+# 3️⃣ Publicar los artefactos (IMPORTANTE)
+# Asegura que los archivos generados en /build sean accesibles en la Release Pipeline
+
 - task: CopyFiles@2
   inputs:
-    SourceFolder: 'build'  # Carpeta donde React genera los archivos de producción
-    Contents: '**'         # Copia todos los archivos dentro de /build
+    SourceFolder: '$(Build.SourcesDirectory)/build'  # ✅ Ruta corregida
+    Contents: '**'  
     TargetFolder: '$(Build.ArtifactStagingDirectory)/build'
 
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)/build'
-    artifactName: 'drop'
+    artifactName: 'drop'  # ✅ Se mantiene el nombre del artefacto
     publishLocation: 'Container'
   displayName: 'Publish Build Artifacts'
